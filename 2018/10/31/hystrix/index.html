@@ -6,15 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: 随笔 | Blog by Happy Mr Wang</title>
+  <title>熔断利器 Hystrix 原理介绍 | Blog by Happy Mr Wang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog by Happy Mr Wang">
-<meta property="og:url" content="http://yoursite.com/tags/随笔/index.html">
+  <meta name="description" content="#熔断最近在学习熔断的知识，要明白什么是熔断首先得了解服务雪崩是什么，话不多说，借图一用">
+<meta name="keywords" content="hystrix,分布式系统,架构设计,随笔">
+<meta property="og:type" content="article">
+<meta property="og:title" content="熔断利器 Hystrix 原理介绍">
+<meta property="og:url" content="http://yoursite.com/2018/10/31/hystrix/index.html">
 <meta property="og:site_name" content="Blog by Happy Mr Wang">
+<meta property="og:description" content="#熔断最近在学习熔断的知识，要明白什么是熔断首先得了解服务雪崩是什么，话不多说，借图一用">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/1.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/2.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/3.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/4.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/5.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/6.png">
+<meta property="og:updated_time" content="2018-10-31T12:59:58.235Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog by Happy Mr Wang">
+<meta name="twitter:title" content="熔断利器 Hystrix 原理介绍">
+<meta name="twitter:description" content="#熔断最近在学习熔断的知识，要明白什么是熔断首先得了解服务雪崩是什么，话不多说，借图一用">
+<meta name="twitter:image" content="http://yoursite.com/2018/10/31/hystrix/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog by Happy Mr Wang" type="application/atom+xml">
   
@@ -138,36 +150,103 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-hystrix" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/31/hystrix/" class="archive-article-date">
-  	<time datetime="2018-10-31T12:53:15.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-31</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/31/hystrix/">熔断利器 Hystrix 原理介绍</a>
+    <h1 class="article-title" itemprop="name">
+      熔断利器 Hystrix 原理介绍
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/10/31/hystrix/" class="archive-article-date">
+  	<time datetime="2018-10-31T12:53:15.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#熔断<br>最近在学习熔断的知识，要明白什么是熔断首先得了解<strong>服务雪崩</strong>是什么，话不多说，借图一用<br><a id="more"></a></p>
+<p>   <img src="/2018/10/31/hystrix/1.png" alt="hystrix"></p>
+<p>在一个分布式系统中往往包含了很多服务，可能一个<strong>服务调用者</strong> 调用这些<strong>服务提供者</strong>时 某个 <strong>服务提供者</strong>由于一些原因导致不可用比如：</p>
+<ul>
+<li>程序bug</li>
+<li>硬件故障</li>
+<li>缓存击穿</li>
+<li>用户的大量请求</li>
+</ul>
+<p>这个<strong>服务提供者</strong> 由于这些原因导致了它的不可用，这样会影响到上层调用者进而影响整个系统。</p>
+<p>如图： A 是服务提供者， B 是 A的服务调用者， C 或者D 是 B 的服务调用者，B 是C 或D 的服务提供者。</p>
+<p>在这里假设服务调用者是 <strong>同步调用</strong>， 那么线程将会阻塞，进而产生大量的等待线程，那么服务器的资源将很快被耗尽。 所以服务调用者所在的服务器将会不可用进而产生 <strong>服务雪崩</strong></p>
+<p>##熔断原理<br>为了避免服务雪崩的发生，有一些应对策略<br>比如：</p>
+<ol>
+<li>流量控制</li>
+</ol>
+<ul>
+<li>改进缓存模式</li>
+<li>服务自动扩容（AWS auto scalling）</li>
+<li>服务调用者降级服务</li>
+</ul>
+<p>通过熔断可以达到<strong>服务降级</strong>的效果—-当一个服务调用者调用一个服务 S 时，可能会失败，那么对 S 的 调用的  <strong>失败总数</strong> / <strong>调用总数</strong> = <strong>R</strong> 这个 R  到了一定的比例 ，那么熔断器将会开启 <strong>Open</strong>状态，那么接下来对S 的调用将会变得不可用转而对其他<strong>备用方法  也叫 回退逻辑</strong>（fallback）进行调用。 不过S 也不会一直不可用，等过了一段时间（MTTR 平均故障处理时间）后， 熔断器将会处于一中半熔断状态 <strong>Half-Open</strong>，这个状态下，S 允许被调用，如果这些调用都成功或者一定比例成功，那么认为 S 已经恢复了，进而熔断器关闭<strong>Closed</strong>。然后恢复服务S。<br>如果这些调用都不成功或者没有达到成功的比例，熔断器保持开启open状态，进而后续的服务调用者会调用回退逻辑 <strong>fallback</strong></p>
+<p>首先明确熔断器的三种状态：</p>
+<ul>
+<li>closed</li>
+<li>half-open</li>
+<li>Open</li>
+</ul>
+<p>#Hystrix  豪猪</p>
+<ul>
+<li>官方github解释</li>
+</ul>
+<p>Hystrix is a latency and fault tolerance library designed to isolate points of access to remote systems, services and 3rd party libraries, stop cascading failure and enable resilience in complex distributed systems where failure is inevitable.</p>
+<p>意思是：  Hystrix 是一个容错库，运用<strong>资源隔离</strong>的手段防止服务的级联故障，在复杂的大型分布式系统中故障是不可避免的，那么使用Hystrix 将会是一个很好的选择</p>
+<p>举一个生活中的例子：</p>
+<p><img src="/2018/10/31/hystrix/2.png" alt="hystrix"></p>
+<p>为了防止水灾或者火灾，货仓会被分成多个小格子，那么哪个格子出现问题，也不会对整体货船造成很大影响。</p>
+<p><strong>那么Hystrix是如何做到资源隔离的呢？</strong></p>
+<p>继续借图：</p>
+<p><img src="/2018/10/31/hystrix/3.png" alt="hystrix"></p>
+<p><img src="/2018/10/31/hystrix/4.png" alt="hystrix"></p>
+<p>下面三个服务和商品详情服务共享同一个线程池，也就是说下面三个服务是没有配备线程池的。  当商品评论服务出现不可用时，那么将会导致商品详情服务中的线程池中的线程一直等待，进而耗费线程池资源，从而导致后续请求被拒绝策略执行。</p>
+<hr>
+<p><img src="/2018/10/31/hystrix/5.png" alt="hystrix"></p>
+<p>Hystrix 通过对每个依赖服务进行资源隔离<strong>（为每个依赖服务提供熔断器和线程池）</strong>这样当某个依赖服务不可用时也不会导致整个商品详情服务不可用。</p>
+<p><strong>当商品评论服务不可用导致熔断器开启时，商品评论服务也能及时响应服务调用方（商品详情服务）。</strong></p>
+<p>##Hystrix又是如何探知服务的健康状况呢？—-Metrics</p>
+<p><img src="/2018/10/31/hystrix/6.png" alt="hystrix"><br>每个格子代表这一秒服务的健康状况。其中有成功，失败，超时，拒绝次数。通过对这些状态的统计和计算进而决定是否开启熔断器的状态。</p>
+
+      
+      	
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,19 +270,135 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/31/hystrix/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-  
-    </div></section>
+
   
 
-    
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
+  
+  <section id="comments" class="comments">
+    <style>
+      .comments{margin:30px;padding:10px;background:#fff}
+      @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+    </style>
+    <div id="vcomment" class="comment"></div>
+<script src="//cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'false' == true ? true : false;
+   var verify = 'false' == true ? true : false;
+   new Valine({
+            av: AV,
+            el: '#vcomment',
+            notify: notify,
+            verify: verify,
+            app_id: "PBYUiavrzFizi07OYuHvaQ80-gzGzoHsz",
+            app_key: "maDztsJyfWglWHDk4ddmK8bV",
+            placeholder: "说点什么吧?",
+            avatar: "",
+            avatar_cdn: "https://sdn.geekzu.org/avatar/",
+            pageSize: 15
+    });
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+  </section>
+
+
+
+
+  
+
+  
+
+  
+
+  
 
 
           </div>
@@ -234,9 +429,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
