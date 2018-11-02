@@ -6,15 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Blog by Happy Mr Wang</title>
+  <title>HTTPS原理 | Blog by Happy Mr Wang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog by Happy Mr Wang">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="#对于 HTTPS 的一些理解 ####一、 references  详解HTTPS原理  也许这样理解HTTPS 更容易   ####二、 为什么需要https  暂且我们先不谈https，先从http说起。 在以往访问服务器的过程中，用户输入baidu.com 那么 浏览器中就会出现 http://www.baidu.com/ 这个url。 粗体字就是http 协议。 那么在现在 url就会变">
+<meta name="keywords" content="https,接口安全设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTPS原理">
+<meta property="og:url" content="http://yoursite.com/2018/11/02/HTTPS/index.html">
 <meta property="og:site_name" content="Blog by Happy Mr Wang">
+<meta property="og:description" content="#对于 HTTPS 的一些理解 ####一、 references  详解HTTPS原理  也许这样理解HTTPS 更容易   ####二、 为什么需要https  暂且我们先不谈https，先从http说起。 在以往访问服务器的过程中，用户输入baidu.com 那么 浏览器中就会出现 http://www.baidu.com/ 这个url。 粗体字就是http 协议。 那么在现在 url就会变">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2018/11/02/HTTPS/1.png">
+<meta property="og:image" content="http://yoursite.com/2018/11/02/HTTPS/2.png">
+<meta property="og:image" content="http://yoursite.com/2018/11/02/HTTPS/3.png">
+<meta property="og:image" content="http://yoursite.com/2018/11/02/HTTPS/4.png">
+<meta property="og:image" content="http://yoursite.com/2018/11/02/HTTPS/5.png">
+<meta property="og:updated_time" content="2018-11-02T06:58:56.631Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog by Happy Mr Wang">
+<meta name="twitter:title" content="HTTPS原理">
+<meta name="twitter:description" content="#对于 HTTPS 的一些理解 ####一、 references  详解HTTPS原理  也许这样理解HTTPS 更容易   ####二、 为什么需要https  暂且我们先不谈https，先从http说起。 在以往访问服务器的过程中，用户输入baidu.com 那么 浏览器中就会出现 http://www.baidu.com/ 这个url。 粗体字就是http 协议。 那么在现在 url就会变">
+<meta name="twitter:image" content="http://yoursite.com/2018/11/02/HTTPS/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog by Happy Mr Wang" type="application/atom+xml">
   
@@ -138,16 +149,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-HTTPS" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+            <article id="post-HTTPS" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/02/HTTPS/">HTTPS原理</a>
+    <h1 class="article-title" itemprop="name">
+      HTTPS原理
     </h1>
   
 
@@ -170,12 +179,77 @@
 </ul>
 <p>####二、 为什么需要https</p>
 <p> 暂且我们先不谈https，先从http说起。 在以往访问服务器的过程中，用户输入baidu.com 那么 浏览器中就会出现 <strong>http</strong>://<a href="http://www.baidu.com/" target="_blank" rel="noopener">www.baidu.com/</a> 这个url。 粗体字就是http 协议。 那么在现在 url就会变成 <strong>https</strong>://<a href="http://www.baidu.com/" target="_blank" rel="noopener">www.baidu.com/</a> ，所以现在的协议就是https。 </p>
-<p>为什么需要https呢？ 是因为 http 不安全，在http协议中，客户端和服务器的交互是由3次握手和4次挥手的过程建立的。那么在客户端和服务器3次握手之后，后面交互的数据都是以明文所展示的。那么由于是这个情况，黑客们就很容易从中获取数据，篡改数据用于一些不正当的用途。 黑客一般会使用 <strong>dns 劫持</strong>的手段伪装成服务器进而使用<strong>http 劫持</strong>的 手段 向用户界面植入小广告，或者直接获取用户的个人信息进行利用，and so on。<br></p>
-        
-          <a class="article-more-a" href="/2018/11/02/HTTPS/#more">more >></a>
-        
+<p>为什么需要https呢？ 是因为 http 不安全，在http协议中，客户端和服务器的交互是由3次握手和4次挥手的过程建立的。那么在客户端和服务器3次握手之后，后面交互的数据都是以明文所展示的。那么由于是这个情况，黑客们就很容易从中获取数据，篡改数据用于一些不正当的用途。 黑客一般会使用 <strong>dns 劫持</strong>的手段伪装成服务器进而使用<strong>http 劫持</strong>的 手段 向用户界面植入小广告，或者直接获取用户的个人信息进行利用，and so on。<br><a id="more"></a><br>https并不是应用层的一种新协议，而是http + ssl/tls 组成的https协议。 也可以用 <strong>HTTP + 加密 + 认证 + 完整性保护 = HTTPS</strong> 的 这个公式来解释。 它保证了客户端和服务器间交互时数据的安全性，和完整性。<strong>https协议的安全性是基于非对称加密手法的对称加密手法保证的</strong>。</p>
+<p> 现在有点不太好理解和有点绕？ 没事，因为刚看这些文字不一定能有直观的感受。 我们从http 开始说起。</p>
+<ul>
+<li><p><strong>对称加密</strong>  —– 服务器和客户端共用一把密钥，每把密钥可以对密文进行加解密。</p>
+</li>
+<li><p><strong>非对称加密</strong> —– 服务器使用私钥，客户端使用公钥，密文如果是私钥加密过的，能且只能用公钥来解，密文如果是公钥加密过的，能且只能用私钥来解。</p>
+</li>
+</ul>
+<p>好了概念性的东西介绍到这里，要理解https协议得从http协议讲起。</p>
+<p>####三、 https的今生前世</p>
+<p>先来看一个图：</p>
+<p><img src="/2018/11/02/HTTPS/1.png" alt="HTTPS原理"></p>
+<p>客户端向服务端发送hello明文， 黑客从中间获取明文数据hello造成数据不安全。</p>
+<hr>
+<p><img src="/2018/11/02/HTTPS/2.png" alt="HTTPS原理"><br>使用对称加密算法对明文加密。 这样倒是不会让黑客看到明文内容。可是这样忽略了一个问题。那就是这个密钥S 也是 客户端和服务器协商而来的。 那协商的这个过程也是明文，所以怎么对这个协商的过程进行加密呢？ 是不是有点像鸡生蛋蛋生鸡的问题。</p>
+<hr>
+<p>这里给出一个解决办法：</p>
+<p><strong>使用非对称加密的手法来保证这个协商过程（客户端和服务器交换对称密钥S）的安全性</strong></p>
+<p><img src="/2018/11/02/HTTPS/3.png" alt="HTTPS原理"></p>
+<p>服务器自己生成一对密钥对，把私钥留给自己（只有服务器有，其他任何人没有），把公钥发给客户端A,B,C。等等。 客户端用公钥对协商过程加密，黑客在窃取不到服务器私钥的情况下是无法对协商过程的明文进行获取的。 这样貌似可以做到安全性了，其实我们忽略了一种情况，那就是dns劫持。</p>
+<hr>
+<p><img src="/2018/11/02/HTTPS/4.png" alt="HTTPS原理"><br>黑客充当中间人，当客户端向真实服务器握手建立连接时，黑客介入dns劫持，那么客户端域名解析后的结果目的地址变成了黑客主机的ip地址，这样的狸猫换太子的手法让我们猝不及防。 </p>
+<p>所以还有什么解决思路吗？那就是<strong>数字证书</strong>。</p>
+<p>####数字证书<br>可能读过计算机专业的人了解过数字签名，在这里暂且先不讨论数字签名。 在上面的这个过程中，公钥被狸猫换太子的手法掉包了，所以这个时候客户端是无法判断这个公钥是黑客发来的还是服务器发来的。</p>
+<p>这个时候就需要数字证书了。 在数字证书颁发的过程中涉及到 第三方机构，也就是俗称的CA。 这个第三方机构一般是经过官方政府认证的，信息都是完整和真实的。  服务器向第三方机构申请数字证书，服务器将它的公钥上传给CA， CA 用它的私钥对服务器的公钥进行加密生成数字证书。  CA 会将本身的公钥发放给所有客户端。</p>
+<p>那么客户端在和服务器端握手建立连接时，服务器端发送证书给客户端，客户端使用CA给它的公钥来对证书进行解密，进而拿出服务器的公钥，然后客户端再用服务器的公钥对协商过程进行加密，那么服务器用它的私钥获取协商过程。 </p>
+<p>这样貌似已经可以了？ 我们还忽略了一个问题，那就是CA 会同时给客户端和黑客颁发 CA 公钥的。而且黑客也能向CA申请证书。 如图：<br><img src="/2018/11/02/HTTPS/5.png" alt="HTTPS"><br>那么在没有这个数字签名的情况下，证书也能被掉包。黑客继续我行我素。</p>
+<p>这个时候<strong>数字签名</strong>的作用体现出来了。</p>
+<p>####什么是数字签名？<br>在服务器向CA申请证书的时候，CA 会将服务器的<strong>相关信息</strong>和服务器的<strong>公钥</strong>还有服务器的<strong>证书编号生成算法</strong>（比如MD5）一起打包，通过证书编号生成算法来生成一个数字签名。</p>
+<p>当客户端向服务器请求的时候，会拿到证书，然后开始对本地证书内容进行校验。如果客户端计算出来的证书编号和数字签名相同，那么认为证书没有被篡改过。</p>
+<ul>
+<li>在这里，我们模拟一个实验： 我们对证书进行<strong>掉包</strong>或者<strong>篡改</strong>，再看看这次黑客是否能够dns劫持成功？</li>
+</ul>
+<ol>
+<li><p>黑客对证书进行掉包后，将假证书给了客户端，然而这个时候，客户端会提醒是否信任这个证书,而且即使是黑客向CA 申请证书后，客户端本地校验后也不会认为是真实服务器的。 重点来了 why？一般来说CA对证书的审批是非常严格的，一般不会轻易给这种黑客审批证书的。<br>在浏览器内置的证书列表中，这些证书都是受信任的。而假证书是不被信任的。 </p>
+</li>
+<li><p>如果黑客是将真实证书篡改了呢？ 客户端本地校验不通过，认为不是真实服务器发来的证书。</p>
+</li>
+</ol>
+<p>所以数字签名可以防止数字证书被篡改。</p>
+<p>像Charles这种抓包工具，一般需要客户端来<strong>信任</strong>它的证书，然后Charles才能伪装成真实服务器进行对https的明文的获取。</p>
+<p>####四、 https的优缺点</p>
+<ul>
+<li>优点  安全</li>
+<li>缺点  速度慢。因为认证身份和加解密的过程比较复杂。</li>
+</ul>
+<p>所以一般不要轻易安装盗版的操作系统和浏览器。这样受信任的证书可能也会是黑客伪装制作用的。</p>
+
       
       	
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -199,16 +273,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/02/HTTPS/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/02/HTTPS/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2018/10/31/hystrix/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">熔断利器 Hystrix 原理介绍</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -228,96 +361,53 @@
 
 
 
-
   
-    <article id="post-hystrix" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/31/hystrix/">熔断利器 Hystrix 原理介绍</a>
-    </h1>
   
-
-        
-        <a href="/2018/10/31/hystrix/" class="archive-article-date">
-  	<time datetime="2018-10-31T12:53:15.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#熔断<br>最近在学习熔断的知识，要明白什么是熔断首先得了解<strong>服务雪崩</strong>是什么，话不多说，借图一用<br></p>
-        
-          <a class="article-more-a" href="/2018/10/31/hystrix/#more">more >></a>
-        
-      
-      	
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">hystrix</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">分布式系统</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">架构设计</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/31/hystrix/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
+  <section id="comments" class="comments">
+    <style>
+      .comments{margin:30px;padding:10px;background:#fff}
+      @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+    </style>
+    <div id="vcomment" class="comment"></div>
+<script src="//cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'false' == true ? true : false;
+   var verify = 'false' == true ? true : false;
+   new Valine({
+            av: AV,
+            el: '#vcomment',
+            notify: notify,
+            verify: verify,
+            app_id: "PBYUiavrzFizi07OYuHvaQ80-gzGzoHsz",
+            app_key: "maDztsJyfWglWHDk4ddmK8bV",
+            placeholder: "说点什么吧?",
+            avatar: "",
+            avatar_cdn: "https://sdn.geekzu.org/avatar/",
+            pageSize: 15
+    });
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+  </section>
 
 
 
 
   
+
+  
+
+  
+
   
 
 
@@ -348,8 +438,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
