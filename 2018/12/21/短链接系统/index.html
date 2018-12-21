@@ -6,27 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>熔断利器 Hystrix 原理介绍 | Blog by Happy Mr Wang</title>
+  <title>短链接系统 | Blog by Happy Mr Wang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="#熔断最近在学习熔断的知识，要明白什么是熔断首先得了解服务雪崩是什么，话不多说，借图一用">
-<meta name="keywords" content="hystrix,分布式系统,架构设计,随笔">
+  <meta name="description" content="#短链接系统#什么是短链接和短链接的历史 将长网址映射成一个很短的网址，当用户点击这个短网址时可以通过重定向到相应的长网址上。自从twitter推出短网址(shorturl),继之国内各大微博跟风,google公开goo.gl使用API,短网址之风愈演愈烈. #短链接的使用场景  向用户发送短信信息时，如果用的是长网址，那么原本可以一条短信可以呈现的内容，这个时候很可能需要俩条信息。有了短网址，那">
+<meta name="keywords" content="http,短链接">
 <meta property="og:type" content="article">
-<meta property="og:title" content="熔断利器 Hystrix 原理介绍">
-<meta property="og:url" content="http://yoursite.com/2018/10/31/hystrix/index.html">
+<meta property="og:title" content="短链接系统">
+<meta property="og:url" content="http://yoursite.com/2018/12/21/短链接系统/index.html">
 <meta property="og:site_name" content="Blog by Happy Mr Wang">
-<meta property="og:description" content="#熔断最近在学习熔断的知识，要明白什么是熔断首先得了解服务雪崩是什么，话不多说，借图一用">
+<meta property="og:description" content="#短链接系统#什么是短链接和短链接的历史 将长网址映射成一个很短的网址，当用户点击这个短网址时可以通过重定向到相应的长网址上。自从twitter推出短网址(shorturl),继之国内各大微博跟风,google公开goo.gl使用API,短网址之风愈演愈烈. #短链接的使用场景  向用户发送短信信息时，如果用的是长网址，那么原本可以一条短信可以呈现的内容，这个时候很可能需要俩条信息。有了短网址，那">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/1.png">
-<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/2.png">
-<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/3.png">
-<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/4.png">
-<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/5.png">
-<meta property="og:image" content="http://yoursite.com/2018/10/31/hystrix/6.png">
-<meta property="og:updated_time" content="2018-10-31T12:59:58.235Z">
+<meta property="og:image" content="http://yoursite.com/2018/12/21/短链接系统/1.png">
+<meta property="og:updated_time" content="2018-12-21T09:05:41.335Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="熔断利器 Hystrix 原理介绍">
-<meta name="twitter:description" content="#熔断最近在学习熔断的知识，要明白什么是熔断首先得了解服务雪崩是什么，话不多说，借图一用">
-<meta name="twitter:image" content="http://yoursite.com/2018/10/31/hystrix/1.png">
+<meta name="twitter:title" content="短链接系统">
+<meta name="twitter:description" content="#短链接系统#什么是短链接和短链接的历史 将长网址映射成一个很短的网址，当用户点击这个短网址时可以通过重定向到相应的长网址上。自从twitter推出短网址(shorturl),继之国内各大微博跟风,google公开goo.gl使用API,短网址之风愈演愈烈. #短链接的使用场景  向用户发送短信信息时，如果用的是长网址，那么原本可以一条短信可以呈现的内容，这个时候很可能需要俩条信息。有了短网址，那">
+<meta name="twitter:image" content="http://yoursite.com/2018/12/21/短链接系统/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog by Happy Mr Wang" type="application/atom+xml">
   
@@ -150,20 +145,20 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-hystrix" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-短链接系统" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      熔断利器 Hystrix 原理介绍
+      短链接系统
     </h1>
   
 
         
-        <a href="/2018/10/31/hystrix/" class="archive-article-date">
-  	<time datetime="2018-10-31T12:53:15.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-31</time>
+        <a href="/2018/12/21/短链接系统/" class="archive-article-date">
+  	<time datetime="2018-12-21T08:52:17.104Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
 </a>
 
          
@@ -172,7 +167,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-keyboard-o"></i>
         <span class="post-meta-item-text">  字数统计: </span>
-        <span class="post-count">1.1k字</span>
+        <span class="post-count">1.4k字</span>
       </span>
     </span>
 
@@ -181,7 +176,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-hourglass-half"></i>
         <span class="post-meta-item-text">  阅读时长: </span>
-        <span class="post-count">3分</span>
+        <span class="post-count">4分</span>
       </span>
     </span>
 </div>
@@ -193,54 +188,63 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>#熔断<br>最近在学习熔断的知识，要明白什么是熔断首先得了解<strong>服务雪崩</strong>是什么，话不多说，借图一用<br><a id="more"></a></p>
-<p>   <img src="/2018/10/31/hystrix/1.png" alt="hystrix"></p>
-<p>在一个分布式系统中往往包含了很多服务，可能一个<strong>服务调用者</strong> 调用这些<strong>服务提供者</strong>时 某个 <strong>服务提供者</strong>由于一些原因导致不可用比如：</p>
-<ul>
-<li>程序bug</li>
-<li>硬件故障</li>
-<li>缓存击穿</li>
-<li>用户的大量请求</li>
-</ul>
-<p>这个<strong>服务提供者</strong> 由于这些原因导致了它的不可用，这样会影响到上层调用者进而影响整个系统。</p>
-<p>如图： A 是服务提供者， B 是 A的服务调用者， C 或者D 是 B 的服务调用者，B 是C 或D 的服务提供者。</p>
-<p>在这里假设服务调用者是 <strong>同步调用</strong>， 那么线程将会阻塞，进而产生大量的等待线程，那么服务器的资源将很快被耗尽。 所以服务调用者所在的服务器将会不可用进而产生 <strong>服务雪崩</strong></p>
-<p>##熔断原理<br>为了避免服务雪崩的发生，有一些应对策略<br>比如：</p>
+        <h2 id="短链接系统"><a href="#短链接系统" class="headerlink" title="#短链接系统"></a>#短链接系统</h2><p>#什么是短链接和短链接的历史</p>
+<p>将长网址映射成一个很短的网址，当用户点击这个短网址时可以通过重定向到相应的长网址上。自从twitter推出短网址(shorturl),继之国内各大微博跟风,google公开goo.gl使用API,短网址之风愈演愈烈.</p>
+<p>#短链接的使用场景</p>
 <ol>
-<li>流量控制</li>
+<li><p>向用户发送短信信息时，如果用的是长网址，那么原本可以一条短信可以呈现的内容，这个时候很可能需要俩条信息。有了短网址，那么就可以让短信更短，更简洁。从而节省公司成本。</p>
+</li>
+<li><p>用户之间可以通过email的方式互相分享短链接。短网址更加方便记忆和收藏。<br>3．短网址提供方可以对短网址所要重定向的长网址进行替换，从而可控性比较高。<br>4.微博一篇文章140字的限制，那么如果用户之间分享网址采用长网址，那么很多情况下会超出字数限制。那么短网址就可以派上用场了。<br>5.可以对一系列的网址进行流量点击统计，分析出用户所关注的东西。有利于项目工作的决策。</p>
+<a id="more"></a>
+</li>
 </ol>
-<ul>
-<li>改进缓存模式</li>
-<li>服务自动扩容（AWS auto scalling）</li>
-<li>服务调用者降级服务</li>
-</ul>
-<p>通过熔断可以达到<strong>服务降级</strong>的效果—-当一个服务调用者调用一个服务 S 时，可能会失败，那么对 S 的 调用的  <strong>失败总数</strong> / <strong>调用总数</strong> = <strong>R</strong> 这个 R  到了一定的比例 ，那么熔断器将会开启 <strong>Open</strong>状态，那么接下来对S 的调用将会变得不可用转而对其他<strong>备用方法  也叫 回退逻辑</strong>（fallback）进行调用。 不过S 也不会一直不可用，等过了一段时间（MTTR 平均故障处理时间）后， 熔断器将会处于一中半熔断状态 <strong>Half-Open</strong>，这个状态下，S 允许被调用，如果这些调用都成功或者一定比例成功，那么认为 S 已经恢复了，进而熔断器关闭<strong>Closed</strong>。然后恢复服务S。<br>如果这些调用都不成功或者没有达到成功的比例，熔断器保持开启open状态，进而后续的服务调用者会调用回退逻辑 <strong>fallback</strong></p>
-<p>首先明确熔断器的三种状态：</p>
-<ul>
-<li>closed</li>
-<li>half-open</li>
-<li>Open</li>
-</ul>
-<p>#Hystrix  豪猪</p>
-<ul>
-<li>官方github解释</li>
-</ul>
-<p>Hystrix is a latency and fault tolerance library designed to isolate points of access to remote systems, services and 3rd party libraries, stop cascading failure and enable resilience in complex distributed systems where failure is inevitable.</p>
-<p>意思是：  Hystrix 是一个容错库，运用<strong>资源隔离</strong>的手段防止服务的级联故障，在复杂的大型分布式系统中故障是不可避免的，那么使用Hystrix 将会是一个很好的选择</p>
-<p>举一个生活中的例子：</p>
-<p><img src="/2018/10/31/hystrix/2.png" alt="hystrix"></p>
-<p>为了防止水灾或者火灾，货仓会被分成多个小格子，那么哪个格子出现问题，也不会对整体货船造成很大影响。</p>
-<p><strong>那么Hystrix是如何做到资源隔离的呢？</strong></p>
-<p>继续借图：</p>
-<p><img src="/2018/10/31/hystrix/3.png" alt="hystrix"></p>
-<p><img src="/2018/10/31/hystrix/4.png" alt="hystrix"></p>
-<p>下面三个服务和商品详情服务共享同一个线程池，也就是说下面三个服务是没有配备线程池的。  当商品评论服务出现不可用时，那么将会导致商品详情服务中的线程池中的线程一直等待，进而耗费线程池资源，从而导致后续请求被拒绝策略执行。</p>
-<hr>
-<p><img src="/2018/10/31/hystrix/5.png" alt="hystrix"></p>
-<p>Hystrix 通过对每个依赖服务进行资源隔离<strong>（为每个依赖服务提供熔断器和线程池）</strong>这样当某个依赖服务不可用时也不会导致整个商品详情服务不可用。</p>
-<p><strong>当商品评论服务不可用导致熔断器开启时，商品评论服务也能及时响应服务调用方（商品详情服务）。</strong></p>
-<p>##Hystrix又是如何探知服务的健康状况呢？—-Metrics</p>
-<p><img src="/2018/10/31/hystrix/6.png" alt="hystrix"><br>每个格子代表这一秒服务的健康状况。其中有成功，失败，超时，拒绝次数。通过对这些状态的统计和计算进而决定是否开启熔断器的状态。</p>
+<p>#原理</p>
+<p>用户输入短网址 比如  <a href="http://t.cn/RlB2PdD" target="_blank" rel="noopener">http://t.cn/RlB2PdD</a> </p>
+<ol>
+<li>DNS 解析 <a href="http://t.cn" target="_blank" rel="noopener">http://t.cn</a> 的IP 地址，</li>
+<li>向解析后的地址发送GET 请求。</li>
+<li>后台的controller 层，通过  /｛path｝ 获得 RIB2PdD 这个短码。</li>
+<li>后台拿着这个短码去获取对应的长URL </li>
+<li>请求通过HTTP 301 或者 302 转到对应的长URL <a href="http://m.wangboiasdfasdf.com/上。" target="_blank" rel="noopener">http://m.wangboiasdfasdf.com/上。</a></li>
+</ol>
+<p>#重定向的选择  301 or 302？</p>
+<pre><code>301 redirect: 301 代表永久性转移(Permanently Moved)
+302 redirect: 302 代表暂时性转移(Temporarily Moved )
+</code></pre><p>相同点：地址栏都会显示重定向后的网址。(并不一定—302重定向网址URL 劫持)</p>
+<p>不同点：</p>
+<p>1.如果是301，在响应的首部中，会建议书签更新为 localtion字段中的地址，因为301 认为原来的资源已经永久移除了。</p>
+<p>2.如果是302，浏览器书签并不会更新location字段中的地址，因为302认为原来的资源只是暂时的转移了。</p>
+<p>3.搜索引擎一般是根据链接的点击数量来进行统计并做出排名的。那么如果是301重定向，搜索引擎会抓取新内容保留新网址，如果是302重定向，搜索引擎会抓取新内容并保留旧网址。</p>
+<p>4.如果我们选择了301重定向，那么不是很好统计链接的点击行为了。如果我们选择了302重定向，那么我们可以根据链接的点击来对数据进行分析。</p>
+<p>5.似乎项目使用302重定向可以对用户点击行为进行统计，但是这会带来302重定向网址URL 劫持的问题。比如有时候一些浏览器Google chrome浏览器，如果地址栏上显示的是重定向后的网址，可能不是很美观，那么浏览器的实现将会隐藏长网址保留短网址。这个时候发生网址URL 劫持的话，将会影响搜索引擎对原先网址的排名。也就是有可能你写的网站内容，被黑客获取，然后黑客用他的网址重定向到你的网站。黑客的网址将会排名上升。你的内容为黑客服务。<br>所以到底是采用301和302 重定向需要根据实际情况来判断。</p>
+<p>#短码生成算法</p>
+<p>GitHub上star数量最多的十个短网址服务对应的算法，大致分为二类：内容压缩算法，发号器算法 </p>
+<p>###数据库自增序列算法（发号器算法—映射关系）</p>
+<p>一般来说 大写字母 26 个，小写字母 26 个，数字10个，一共有62个字符。如果短码是6位，那么62的6次方大概是500多亿。也就是说能存储500多亿个短链接。</p>
+<p>所以我们可以将短码看成62进制的字符串，可以通过写一个工具类来完成 62进制和10进制之间的转换。（这个10进制是数据库的自增id）</p>
+<p><img src="/2018/12/21/短链接系统/1.png" alt="短链接系统"></p>
+<p>这样就能生成短网址了。</p>
+<p>###这种算法分析</p>
+<ol>
+<li><strong>安全性</strong></li>
+</ol>
+<pre><code>如果短码不经过任何处理，一些短码的规律容易被尝试出来进而造成长网址的不安全问题。
+所以在这个算法上可以对生成的短码进行random和shuffle的处理。
+</code></pre><ol start="2">
+<li><p><strong>自增id不够用</strong>—-大多数是够用的  （innodb一个表空间可以存储256TB大小的数据）</p>
+</li>
+<li><p><strong>查询速度</strong></p>
+<p>当太多数据时，也就是网址数量太多，索引？ 分库分表还要保证网址唯一性(全局id—snowflake)？将热点网址缓存（这样将会改变短网址生成算法了）。</p>
+</li>
+<li><p>如果只有一个发号控制器，对于系统可能形成单点性能瓶颈和单点故障问题。<br>可以同时发单号，和双号。</p>
+</li>
+</ol>
+<p>References</p>
+<p>[1] 另辟蹊径–自增短链ID设计 <a href="https://my.oschina.net/u/2485991/blog/613920" target="_blank" rel="noopener">https://my.oschina.net/u/2485991/blog/613920</a></p>
+<p>[2] 短网址安全浅谈-腾讯 <a href="https://security.tencent.com/index.php/blog/msg/126" target="_blank" rel="noopener">https://security.tencent.com/index.php/blog/msg/126</a></p>
+<p>[3]  HTTP 指南</p>
+<p>[4] 图解HTTP</p>
+<p>[5] Email with social attributes Google Patents </p>
 
       
       	
@@ -285,19 +289,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">hystrix</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">http</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">分布式系统</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">架构设计</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">短链接</a>
         		</li>
       		
 		</ul>
@@ -353,7 +349,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/31/hystrix/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/21/短链接系统/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -367,15 +363,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/11/02/HTTPS/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          HTTPS原理
-        
-      </div>
-    </a>
   
+    <a href="/2018/11/02/HTTPS/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">HTTPS原理</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
