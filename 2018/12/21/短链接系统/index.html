@@ -17,7 +17,7 @@
 <meta property="og:description" content="#短链接系统#什么是短链接和短链接的历史 将长网址映射成一个很短的网址，当用户点击这个短网址时可以通过重定向到相应的长网址上。自从twitter推出短网址(shorturl),继之国内各大微博跟风,google公开goo.gl使用API,短网址之风愈演愈烈. #短链接的使用场景  向用户发送短信信息时，如果用的是长网址，那么原本可以一条短信可以呈现的内容，这个时候很可能需要俩条信息。有了短网址，那">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2018/12/21/短链接系统/1.png">
-<meta property="og:updated_time" content="2018-12-22T02:48:04.482Z">
+<meta property="og:updated_time" content="2018-12-22T02:57:51.363Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="短链接系统">
 <meta name="twitter:description" content="#短链接系统#什么是短链接和短链接的历史 将长网址映射成一个很短的网址，当用户点击这个短网址时可以通过重定向到相应的长网址上。自从twitter推出短网址(shorturl),继之国内各大微博跟风,google公开goo.gl使用API,短网址之风愈演愈烈. #短链接的使用场景  向用户发送短信信息时，如果用的是长网址，那么原本可以一条短信可以呈现的内容，这个时候很可能需要俩条信息。有了短网址，那">
@@ -244,7 +244,7 @@
 <p>###数据库分表生成短链接算法</p>
 <p>这种算法本质上还是对第一种算法进行扩展。分表之后，遇到的问题就是自增id会冲突（如果为每个表设立区间 比如 t1 对应 0~1000000条数据， t2 对应1000001~2000000条数据 依次类推  但是这种处理方案会限制每张表存储的url行数，所以不是很好） 。所以这里给出俩种解决方案：</p>
 <p>#####全局id发号器</p>
-<p>采取未来的vivo-snowflake，为每个长链接分配全局唯一的id，然后对这个id进行处理，结果返回给调用方，这样能做到短链接的唯一性。</p>
+<p>采取snowflake，为每个长链接分配全局唯一的id，然后对这个id进行处理，结果返回给调用方，这样能做到短链接的唯一性。</p>
 <p>#####分段自增</p>
 <p>对长链接进行hash,取到的hash值的后8位称作 hash_index（0~255的数字 如果你想分表的表数更多，那么hash位数可以   更多）  这个 hash_index 是为了找到分表的那张表，然后把长链接和这个hash_index 插入对应的分表生成 primary key，然后把 primary_key 和 hash_index 进行拼接 形成 primary_key+hash_index 的结构也就是我们的短码（考虑到安全性我们还需对它进行混淆） </p>
 <p>在分段自增的这个解决方案中，对于hash算法的选择也是有讲究的，首先排除掉jdk 自带的hash，因为这个方式只能保证jvm一次运行返回值是相等的，所以可以使用md5, 分表数如果是256张表，每天生成100w条短链接的话，这个256张表可以使用14年，如果再加上分库的逻辑那么可以使用256*14 年，可见根本用不完。  所以这种分段自增的算法可以保证性能的同时又满足了短链接的数量。</p>
