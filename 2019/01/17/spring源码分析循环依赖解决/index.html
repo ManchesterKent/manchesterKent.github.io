@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018 | Blog by Happy Mr Wang</title>
+  <title>spring源码分析-单例模式下循环依赖的解决 | Blog by Happy Mr Wang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog by Happy Mr Wang">
-<meta property="og:url" content="http://yoursite.com/archives/2018/index.html">
+  <meta name="description" content="单例bean循环依赖解决作者:王博  vivo   服务器开发 循环依赖定义 在spring的启动过程中，有时候会出现bean之间的循环依赖，那什么是循环依赖呢？就是A依赖B，B依赖A，在A未加载完成的情况下，同时B开始了加载，这个时候又要注入A，这样就会出现问题。 SPRING 对循环依赖的解决 spring对单例的bean有循环依赖的解决方案，但是目前对原型模式下的bean的循环依赖并没有很好">
+<meta name="keywords" content="spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring源码分析-单例模式下循环依赖的解决">
+<meta property="og:url" content="http://yoursite.com/2019/01/17/spring源码分析循环依赖解决/index.html">
 <meta property="og:site_name" content="Blog by Happy Mr Wang">
+<meta property="og:description" content="单例bean循环依赖解决作者:王博  vivo   服务器开发 循环依赖定义 在spring的启动过程中，有时候会出现bean之间的循环依赖，那什么是循环依赖呢？就是A依赖B，B依赖A，在A未加载完成的情况下，同时B开始了加载，这个时候又要注入A，这样就会出现问题。 SPRING 对循环依赖的解决 spring对单例的bean有循环依赖的解决方案，但是目前对原型模式下的bean的循环依赖并没有很好">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-17T08:37:33.119Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog by Happy Mr Wang">
+<meta name="twitter:title" content="spring源码分析-单例模式下循环依赖的解决">
+<meta name="twitter:description" content="单例bean循环依赖解决作者:王博  vivo   服务器开发 循环依赖定义 在spring的启动过程中，有时候会出现bean之间的循环依赖，那什么是循环依赖呢？就是A依赖B，B依赖A，在A未加载完成的情况下，同时B开始了加载，这个时候又要注入A，这样就会出现问题。 SPRING 对循环依赖的解决 spring对单例的bean有循环依赖的解决方案，但是目前对原型模式下的bean的循环依赖并没有很好">
   
     <link rel="alternative" href="/atom.xml" title="Blog by Happy Mr Wang" type="application/atom+xml">
   
@@ -138,156 +143,263 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-spring源码分析循环依赖解决" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      spring源码分析-单例模式下循环依赖的解决
+    </h1>
+  
+
+        
+        <a href="/2019/01/17/spring源码分析循环依赖解决/" class="archive-article-date">
+  	<time datetime="2019-01-17T08:35:41.729Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-17</time>
+</a>
+
+         
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.1k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">4分</span>
+      </span>
+    </span>
+</div>
+
+
+          
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="单例bean循环依赖解决"><a href="#单例bean循环依赖解决" class="headerlink" title="单例bean循环依赖解决"></a>单例bean循环依赖解决</h2><p>作者:王博  vivo   服务器开发</p>
+<p><strong>循环依赖定义</strong></p>
+<p>在spring的启动过程中，有时候会出现bean之间的循环依赖，那什么是循环依赖呢？就是A依赖B，B依赖A，在A未加载完成的情况下，同时B开始了加载，这个时候又要注入A，这样就会出现问题。</p>
+<p><strong>SPRING 对循环依赖的解决</strong></p>
+<p>spring对单例的bean有循环依赖的解决方案，但是目前对原型模式下的bean的循环依赖并没有很好的解决方案。spring对单例bean 是采用提前在内存缓存中放置ObjectFactory来提前曝光bean，从而来解决循环依赖的问题的。</p>
+<p>以前知道有这么一回事，但是没从源码层面去剖析，所以似懂非懂，这样不像是一位技术的master。 这里我对spring源码进行了简化。代码如下：</p>
+<p><strong>AbstractBeanFactory   doGetBean 方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">protected &lt;T&gt; T doGetBean(final String name, @Nullable final Class&lt;T&gt; requiredType,</span><br><span class="line">			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException &#123;</span><br><span class="line"></span><br><span class="line">		final String beanName = transformedBeanName(name);</span><br><span class="line">		Object bean;</span><br><span class="line"></span><br><span class="line">		//从缓存中尝试拿一遍bean 这个 getSingleton 方法里面有 singletonFactories 内存map  用来存储未加载好的bean 对应的ObjectFactory</span><br><span class="line">		Object sharedInstance = getSingleton(beanName);</span><br><span class="line">		if (sharedInstance != null &amp;&amp; args == null) &#123;</span><br><span class="line">			// 处理FactoryBean</span><br><span class="line">			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);</span><br><span class="line">				checkMergedBeanDefinition(mbd, beanName, args);</span><br><span class="line">				String[] dependsOn = mbd.getDependsOn();</span><br><span class="line">				if (dependsOn != null) &#123;</span><br><span class="line"></span><br><span class="line">					for (String dep : dependsOn) &#123;</span><br><span class="line">						try &#123;</span><br><span class="line">							//递归加载依赖的bean</span><br><span class="line">							getBean(dep);</span><br><span class="line">						&#125;</span><br><span class="line">						catch (NoSuchBeanDefinitionException ex) &#123;</span><br><span class="line">							throw new BeanCreationException(mbd.getResourceDescription(), beanName,</span><br><span class="line">									&quot;&apos;&quot; + beanName + &quot;&apos; depends on missing bean &apos;&quot; + dep + &quot;&apos;&quot;, ex);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				if (mbd.isSingleton()) &#123;</span><br><span class="line"></span><br><span class="line">					// 重载的getSingleton方法， 第二个参数是回调，在执行这个方法的时候 会执行createBean 方法，在这个方法里面，ObjectFactory被提前曝光了。</span><br><span class="line">					sharedInstance = getSingleton(beanName, () -&gt; &#123;</span><br><span class="line">						try &#123;</span><br><span class="line">							return createBean(beanName, mbd, args);</span><br><span class="line">						&#125;</span><br><span class="line">						catch (BeansException ex) &#123;</span><br><span class="line">							destroySingleton(beanName);</span><br><span class="line">							throw ex;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;);</span><br><span class="line"></span><br><span class="line">					// 处理FactoryBean</span><br><span class="line">					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			catch (BeansException ex) &#123;</span><br><span class="line">				cleanupAfterBeanCreationFailure(beanName);</span><br><span class="line">				throw ex;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		return (T) bean;</span><br></pre></td></tr></table></figure>
+<p>在以上这段代码里面，关键的注释已经被给了出来。我们看看这段代码做了什么事情。</p>
+<p><strong>第一步：</strong> 先从缓存里面拿单例bean，如果拿不出来，那么再进行下面步骤的加载。如果拿的出来，那么对它进行FactoryBean的处理。</p>
+<p><strong>第二步：</strong> 递归加载依赖的bean。 这个for循环被我简化了很多，如果有兴趣的朋友可以看看原来的样子，原来的样子中有个抛异常的代码还是非常值得学习的。</p>
+<p><strong>第三步：</strong> 递归到底层，如果是单例bean，那就调用重载的getSingleton方法，这个方法的第二个参数是回调，在回调creatBean方法调用的doCreatBean中判断这个bean是否还是在创建状态中，如果是，那就把ObjectFactory提前曝光。这个提前曝光的代码层次有点深，可以点进源码看一下。</p>
+<hr>
+<p><strong>第一个getSingleton方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">protected Object getSingleton(String beanName, boolean allowEarlyReference) &#123;</span><br><span class="line">		Object singletonObject =null;</span><br><span class="line">		//这个单例是不是还在被创建，如果是，那么就去取singletonFactories 中的 ObjectFactory</span><br><span class="line">		if (isSingletonCurrentlyInCreation(beanName)) &#123;</span><br><span class="line">			</span><br><span class="line">				if (allowEarlyReference) &#123;</span><br><span class="line">					ObjectFactory&lt;?&gt; singletonFactory = this.singletonFactories.get(beanName);</span><br><span class="line">					if (singletonFactory != null) &#123;</span><br><span class="line">						singletonObject = singletonFactory.getObject();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		</span><br><span class="line">		return singletonObject;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>看看以上代码做了什么：</p>
+<p>这些代码也被我简化过，主要还是从ObjectFactory池中拿ObjectFactory。</p>
+<hr>
+<p><strong>重载的getSingleton方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public Object getSingleton(String beanName, ObjectFactory&lt;?&gt; singletonFactory) &#123;</span><br><span class="line">		</span><br><span class="line">		synchronized (this.singletonObjects) &#123;</span><br><span class="line">			Object singletonObject = this.singletonObjects.get(beanName);</span><br><span class="line">			if (singletonObject == null) &#123;</span><br><span class="line">				</span><br><span class="line">				//这个方法很重要，比较关键</span><br><span class="line">				beforeSingletonCreation(beanName);</span><br><span class="line">				</span><br><span class="line">				try &#123;</span><br><span class="line">				</span><br><span class="line">				    //执行回调</span><br><span class="line">					singletonObject = singletonFactory.getObject();</span><br><span class="line">					</span><br><span class="line">				&#125;</span><br><span class="line">				finally &#123;</span><br><span class="line">					if (recordSuppressedExceptions) &#123;</span><br><span class="line">						this.suppressedExceptions = null;</span><br><span class="line">					&#125;</span><br><span class="line">					afterSingletonCreation(beanName);</span><br><span class="line">				&#125;</span><br><span class="line">				if (newSingleton) &#123;</span><br><span class="line">					addSingleton(beanName, singletonObject);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			return singletonObject;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>第二个重载的方法比较重要同样也被我简化了，在beforeSingletonCreation 方法里面，我们在singletonsCurrentlyInCreation 这个set里面加入了beanName，标志这个bean正在被创建。那么执行到回调方法singletonFactory.getObject()的时候就开始提前曝光ObjectFactory了。我们可以来看看。</p>
+<p>回调时调用的createBean方法的doCreateBean方法中有如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">boolean earlySingletonExposure = (mbd.isSingleton() &amp;&amp; this.allowCircularReferences &amp;&amp;</span><br><span class="line">				isSingletonCurrentlyInCreation(beanName));</span><br><span class="line">		if (earlySingletonExposure) &#123;</span><br><span class="line">			if (logger.isTraceEnabled()) &#123;</span><br><span class="line">				logger.trace(&quot;Eagerly caching bean &apos;&quot; + beanName +</span><br><span class="line">						&quot;&apos; to allow for resolving potential circular references&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			//提前曝光 ObjectFactory</span><br><span class="line">			addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到earlySingletonExposure 布尔类型中有isSingletonCurrentlyInCreation方法，这个方法刚好也是根据上一步来的，看是否这个bean正在创建中。那么如果是的，就提前曝光ObjectFactory。  </p>
+<p>所以，这样spring就解决了单例模式下的循环依赖。有兴趣的朋友可以看看spring的源码。</p>
+
+      
+      	
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>求打赏，我买糖<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechat.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/21/短链接系统/" class="archive-article-date">
-  	<time datetime="2018-12-21T08:52:17.104Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/21/短链接系统/">短链接系统</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">http</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">短链接</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">spring</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/01/17/spring源码分析循环依赖解决/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/02/HTTPS/" class="archive-article-date">
-  	<time datetime="2018-11-02T02:37:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-02</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/21/短链接系统/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">短链接系统</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/02/HTTPS/">HTTPS原理</a>
-    </h1>
+  
+  
+  <section id="comments" class="comments">
+    <style>
+      .comments{margin:30px;padding:10px;background:#fff}
+      @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+    </style>
+    <div id="vcomment" class="comment"></div>
+<script src="//cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'false' == true ? true : false;
+   var verify = 'false' == true ? true : false;
+   new Valine({
+            av: AV,
+            el: '#vcomment',
+            notify: notify,
+            verify: verify,
+            app_id: "PBYUiavrzFizi07OYuHvaQ80-gzGzoHsz",
+            app_key: "maDztsJyfWglWHDk4ddmK8bV",
+            placeholder: "说点什么吧?",
+            avatar: "",
+            avatar_cdn: "https://sdn.geekzu.org/avatar/",
+            pageSize: 15
+    });
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+  </section>
+
+
+
+
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">https</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">接口安全设计</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/31/hystrix/" class="archive-article-date">
-  	<time datetime="2018-10-31T12:53:15.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/31/hystrix/">熔断利器 Hystrix 原理介绍</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">hystrix</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">分布式系统</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">架构设计</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -318,8 +430,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
